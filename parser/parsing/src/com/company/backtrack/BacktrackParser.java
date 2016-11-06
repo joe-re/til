@@ -3,12 +3,23 @@ package com.company.backtrack;
 import com.company.lexer.Lexer;
 import com.company.lexer.ListLexer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by noguchimasato on 11/6/16.
  */
 public class BacktrackParser extends Parser {
+    private Map<Integer, Integer> list_memo;
+
+    @Override
+    public void clearMemo() {
+        list_memo = new HashMap<>();
+    }
+
     public BacktrackParser(Lexer input) {
         super(input);
+        list_memo = new HashMap<>();
     }
 
     public void stat() throws MismatchedTokenException {
@@ -40,10 +51,32 @@ public class BacktrackParser extends Parser {
         return success;
     }
 
-    public void list() throws MismatchedTokenException{
+    public void _list() throws MismatchedTokenException {
+        System.out.println("parse list rule at toke index:" + this.p);
         match(ListLexer.LBRACK);
         elements();
         match(ListLexer.RBRACK);
+    }
+
+    public void list() throws MismatchedTokenException {
+        boolean failed = false;
+        int startTokenIndex = this.p;
+        try {
+            if (isSpeclating() && alreadyParsedRule(list_memo)) return;
+        } catch (PreviousParseFailedExpection ex) {
+            throw new MismatchedTokenException("");
+        }
+        try {
+            _list();
+        } catch (MismatchedTokenException e) {
+            failed = true;
+            throw e;
+        }
+        finally {
+            if (isSpeclating()) {
+                memoize(list_memo, startTokenIndex, failed);
+            }
+        }
     }
 
     public void assign() throws MismatchedTokenException{
