@@ -9,7 +9,9 @@ public class ListLexer extends Lexer {
     public static int LBRACK = 4;
     public static int RBRACK = 5;
     public static int EQUAL = 6;
-    public static String[] tokenNames = { "n/a", "<EOF>", "NAME", "COMMA", "LBRACK", "RBRACK", "EQUAL" };
+    public static int INT = 7;
+    public static int PLUS = 8;
+    public static String[] tokenNames = { "n/a", "<EOF>", "NAME", "COMMA", "LBRACK", "RBRACK", "EQUAL", "INT", "PLUS" };
     public String getTokenName(int x) { return tokenNames[x]; }
     public ListLexer(String input) { super(input); }
     boolean isLETTER() { return c>='a' && c<='z' || c>='A' && c<='Z'; }
