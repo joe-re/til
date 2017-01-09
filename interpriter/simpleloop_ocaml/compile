@@ -1,0 +1,4 @@
+ocamlopt -c util.ml
+ocamlopt -c main.ml
+mkdir -p dist
+ocamlopt -o dist/simple util.cmx main.cmx

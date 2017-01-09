@@ -1,8 +1,10 @@
+open Util;;
+
 let quit_loop = ref false in
 while not !quit_loop do
   print_string "->";
   let str = read_line () in
-  if String.lowercase_ascii(str) = "quit" then
+  if compare_ign_case(str) then
     quit_loop := true
   else
     print_endline(str)
