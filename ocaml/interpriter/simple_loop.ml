@@ -31,6 +31,14 @@ let div_top_stack lst =
 let mul_top_stack lst =
   let f(first, second) = first *. second in calc_top_2_elem f lst
 
+let is_number s =
+  try ignore (float_of_string s); true
+  with _ -> false
+
+let push stck s =
+  if is_number s then float_of_string s::stck
+  else let _ = print_endline "syntax error"; in stck
+
 let () =
   let stck = ref [] in
   let quit_loop = ref false in
@@ -41,14 +49,16 @@ let () =
       quit_loop := true
     else if comp_ign_case "printstack" str then
       print_stack !stck
-    else
-      stck :=  match str.[0] with
+    else if String.length(str) = 1 then
+      stck := match str.[0] with
         | '+' -> add_top_stack !stck
         | '-' ->
           if String.length str = 1 then sub_top_stack !stck
           else float_of_string str::!stck
         | '/' -> div_top_stack !stck
         | '*' -> mul_top_stack !stck
-        | _ -> float_of_string str::!stck
+        | _ -> push !stck str
+    else
+      stck := push !stck str
   done
 
