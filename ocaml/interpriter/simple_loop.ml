@@ -11,13 +11,25 @@ let get_top_2_elem lst = match lst with
   | first::second::rest -> Some(first, second, rest)
   | first::rest -> None
 
-let add_top_stack lst =
+let calc_top_2_elem f lst =
   let elems = get_top_2_elem lst in
   match elems with
   | Some(first, second, rest) ->
-    print_endline(string_of_float(first +. second));
-    (first +. second)::rest
+    print_endline(string_of_float(f(first, second)));
+    f(first, second)::rest
   | None -> print_endline "lack of operand"; lst
+
+let add_top_stack lst =
+  let f(first, second) = first +. second in calc_top_2_elem f lst
+
+let sub_top_stack lst =
+  let f(first, second) = first -. second in calc_top_2_elem f lst
+
+let div_top_stack lst =
+  let f(first, second) = first /. second in calc_top_2_elem f lst
+
+let mul_top_stack lst =
+  let f(first, second) = first *. second in calc_top_2_elem f lst
 
 let () =
   let stck = ref [] in
@@ -32,9 +44,11 @@ let () =
     else
       stck :=  match str.[0] with
         | '+' -> add_top_stack !stck
-        | '-' -> !stck
-        | '/' -> !stck
-        | '*' -> !stck
+        | '-' ->
+          if String.length str = 1 then sub_top_stack !stck
+          else float_of_string str::!stck
+        | '/' -> div_top_stack !stck
+        | '*' -> mul_top_stack !stck
         | _ -> float_of_string str::!stck
   done
 
