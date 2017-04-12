@@ -1,4 +1,4 @@
-type tokenType = Value | Plus | Minus | Mult | Divide
+type tokenType = Value | Plus | Minus | Mult | Divide | LParen | RParen
 type token = { value : float option; tokenType : tokenType }
 
 let getTokenTypeName token = match token with
@@ -9,6 +9,8 @@ let getTokenTypeName token = match token with
       | Minus -> "-"
       | Divide -> "/"
       | Mult -> "*"
+      | LParen -> "("
+      | RParen -> ")"
 
 let comp_ign_case c1 c2 =
   String.lowercase_ascii c1 = String.lowercase_ascii c2
@@ -22,6 +24,10 @@ let get_top_2_elem lst = match lst with
   [] -> None
   | first::second::rest -> Some(first, second, rest)
   | first::rest -> None
+
+let get_top_elem lst = match lst with
+  [] -> None
+  | first::rest -> Some(first)
 
 let get_value v = match v with
   | Some v -> v
@@ -72,6 +78,42 @@ let calc stck new_token =
       )
     | None -> stck
 
+let rec calcurate_stck stck str =
+  let value_token = { value=Some(float_of_string str); tokenType=Value } in
+  match stck with
+  | [] -> value_token::stck
+  | [_] -> value_token::stck
+  | _ ->
+    let elem = get_top_2_elem stck in
+    match elem with
+    | None -> stck
+    | Some(f, _, _) when f.tokenType = LParen -> value_token::stck
+    | Some(f, _, r) ->
+      let tt = get_top_elem r in
+      match tt with
+        | Some(x) when x.tokenType = LParen -> value_token::stck
+        | _ ->
+          let next_stck = calc stck value_token in
+          match next_stck with
+            | first::rest when first.tokenType = Value -> let s = getTokenTypeName(first) in calcurate_stck rest s
+            | _ -> next_stck
+
+
+let process_RParen stck =
+  let elems1 = get_top_2_elem stck in
+  match elems1 with
+  | Some(top, top_1, r1) -> (
+    let elems2 = get_top_2_elem r1 in
+    match elems2 with
+    | Some(top_2, top_3, r2) -> (
+      let next_stck = calc ([top_1; top_2] @ r2) top in
+      match next_stck with
+        | first::rest when first.tokenType = Value -> let s = getTokenTypeName(first) in calcurate_stck rest s
+        | _ -> next_stck
+      )
+    | None -> stck
+    )
+  | None -> stck
 
 exception SyntaxError
 
@@ -93,12 +135,10 @@ let () =
           else { value=Some(float_of_string str); tokenType=Value }::!stck
         | '/' -> { value=None; tokenType=Divide }::!stck
         | '*' -> { value=None; tokenType=Mult }::!stck
+        | '(' -> { value=None; tokenType=LParen }::!stck
+        | ')' -> process_RParen !stck
         | _   -> print_endline "syntax error"; !stck
     else
-      let value_token = { value=Some(float_of_string str); tokenType=Value } in
-      stck := if List.length !stck < 2 then
-        value_token::!stck
-      else
-        calc !stck value_token
+      stck := calcurate_stck !stck str
   done
 
