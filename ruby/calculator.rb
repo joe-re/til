@@ -42,6 +42,18 @@ def evaluate(tree, genv = {}, lenv = {})
     lenv[tree[1]] = evaluate(tree[2], genv, lenv)
   when 'var_ref'
     lenv[tree[1]]
+  when 'ary_new'
+    ary = []
+    i = 0
+    while tree[i + 1]
+      ary[i] = evaluate(tree[i + 1], genv, lenv)
+      i += 1
+    end
+    ary
+  when 'ary_ref'
+    ary = evaluate(tree[1], genv, lenv)
+    idx = evaluate(tree[2], genv, lenv)
+    ary[idx]
   when 'if'
     return evaluate(tree[2], genv, lenv) if evaluate(tree[1], genv, lenv)
     evaluate(tree[3], genv, lenv)
