@@ -24,3 +24,5 @@ when 1
 else
   p("others")
 end
+
+p 1, 2, 3
