@@ -1,11 +1,23 @@
 require 'minruby'
 
-def sum(tree)
+def evaluate(tree)
   return tree[1] if tree[0] == 'lit'
-  left = sum(tree[1])
-  right = sum(tree[2])
-  left + right
+  left = evaluate tree[1]
+  right = evaluate tree[2]
+  case tree[0]
+  when '+' then left + right
+  when '-' then left - right
+  when '*' then left * right
+  when '/' then left / right
+  when '**' then left**right
+  when '%' then left % right
+  when '>' then left > right
+  when '<' then left < right
+  when '==' then left == right
+  end
 end
 
-tree = minruby_parse('1 + 2 + 3 + 4')
-p sum(tree)
+p evaluate(minruby_parse('2%4'))
+p evaluate(minruby_parse('1 + 1 == 2'))
+p evaluate(minruby_parse('1 + 1 < 2'))
+p evaluate(minruby_parse('1 + 1 < 3'))
