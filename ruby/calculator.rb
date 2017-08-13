@@ -13,6 +13,14 @@ def evaluate(tree)
   when '<' then evaluate(tree[1]) < evaluate(tree[2])
   when '==' then evaluate(tree[1]) == evaluate(tree[2])
   when 'func_call' then p evaluate(tree[2])
+  when 'stmts'
+    i = 1
+    last = nil
+    while tree[i] != nil
+      last = evaluate(tree[i])
+      i += 1
+    end
+    last
   end
 end
 
