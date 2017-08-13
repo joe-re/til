@@ -17,6 +17,13 @@ def evaluate(tree, env = {})
     env[tree[1]] = evaluate(tree[2], env)
   when 'var_ref'
     env[tree[1]]
+  when 'if'
+    return evaluate(tree[2], env) if evaluate(tree[1], env)
+    evaluate(tree[3], env)
+  when 'while'
+    while evaluate(tree[1], env)
+      evaluate(tree[2], env)
+    end
   when 'stmts'
     i = 1
     last = nil
