@@ -54,6 +54,16 @@ def evaluate(tree, genv = {}, lenv = {})
     ary = evaluate(tree[1], genv, lenv)
     idx = evaluate(tree[2], genv, lenv)
     ary[idx]
+  when 'hash_new'
+    hash = {}
+    i = 0
+    while tree[i + 1]
+      key = evaluate(tree[i + 1], genv, lenv)
+      value = evaluate(tree[i + 2], genv, lenv)
+      hash[key] = value
+      i += 2
+    end
+    hash
   when 'if'
     return evaluate(tree[2], genv, lenv) if evaluate(tree[1], genv, lenv)
     evaluate(tree[3], genv, lenv)
