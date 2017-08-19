@@ -1,10 +1,11 @@
-type tokenType = Value | Plus | Minus | Mult | Divide | LParen | RParen
+type tokenType = Start | Value | Plus | Minus | Mult | Divide | LParen | RParen
 type token = { value : float option; tokenType : tokenType }
 
 let getTokenTypeName token = match token with
   { value=v; tokenType=t } ->
     match t with
       Value -> (match v with None -> "" | Some v -> string_of_float v)
+      | Start -> "start"
       | Plus -> "+"
       | Minus -> "-"
       | Divide -> "/"
@@ -119,6 +120,7 @@ exception SyntaxError
 
 let () =
   let stck = ref [] in
+  let prev_token = { value=None; tokenType=Start } in
   let quit_loop = ref false in
   while not !quit_loop do
     print_string "->";
